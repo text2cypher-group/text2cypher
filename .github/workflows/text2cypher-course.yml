@@ -3,11 +3,13 @@ name: Course implementation checks
 on:
   push:
     paths:
-      - 'course-implementation/**'
+      - 'backend/**'
+      - 'frontend/**'
       - '.github/workflows/text2cypher-course.yml'
   pull_request:
     paths:
-      - 'course-implementation/**'
+      - 'backend/**'
+      - 'frontend/**'
       - '.github/workflows/text2cypher-course.yml'
 
 jobs:
@@ -15,14 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: course-implementation/backend
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: pip
-          cache-dependency-path: course-implementation/backend/requirements.txt
+          cache-dependency-path: backend/requirements.txt
       - run: python -m pip install -r requirements.txt
       - run: python -m pytest -q
       - run: python -m evaluation.run
@@ -31,13 +33,13 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: course-implementation/frontend
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: course-implementation/frontend/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npm run build

@@ -1,97 +1,104 @@
-# 面向代码图谱的 Text2Cypher 查询智能体
+# Text2Cypher 代码图谱查询智能体 · YZJ
 
-面向微服务代码图谱（Neo4j）的自然语言查询智能体，支持将中文自然语言问题转换为严格受控的只读 Cypher，完成跨服务调用链、反向影响分析、MQ 三阶段消息流及 RPC + MQ 综合依赖分析，并输出交互式拓扑图、自然语言总结、全链路追溯与 Markdown 报告。
+高级软件工程第五组课程项目。开发者输入自然语言问题，系统在图谱中定位实体，生成并校验参数化 Cypher，返回实体、调用路径、拓扑和可导出的查询记录。
 
----
+界面使用 Vue 3 和 TypeScript。后端把结构化查询意图编译为参数化 Cypher，并在执行前校验 Schema。
 
-## 一、实现思路
+![YZJ 版工作台的 RPC 与 MQ 查询结果](docs/yzj-workspace.png)
 
-传统单向开环 Text2Cypher 流水线在面对**多跳跨服务调用、异构通信（RPC + MQ）、口语化实体名称、错别字及执行报错/空结果**时非常脆弱。本系统参考近年 Text2Cypher / Text2SQL 前沿进展（如 Ozsoy 2025 `arXiv:2505.05118` *Enhancing Text2Cypher with Schema Filtering*、NAACL 2025 *CodexGraph* 及 CHESS 执行反馈范式），采用四项核心设计：
+## 快速运行
 
-1. **大模型语义评估与统一规划（无关键词规则）**
-   - 不使用低级关键词/字典判断难度或抽取实体。前置由大模型结合轻量图谱骨架一次性输出**意图分类、基于图遍历复杂度的难度等级与理由、Schema 按需展开标志、语义实体候选（含错别字纠错）、所需领域 Skills 及子查询拆解方案**。
-2. **Enhanced Schema 感知 + 拼写容错实库对齐**
-   - 启动时自动连接目标 Neo4j 抽取实时中文标签、23 种有向三元组、精选高价值属性与关键枚举值（自动剔除 0 节点空标签与 40+ 内部静态分析噪音字段）。
-   - 生成 Cypher 前，定向将语义抽取出的实体候选在 Neo4j 中核实真名；若精确/包含匹配未命中，自动基于 `SequenceMatcher` 编辑相似度在实时实体词表中做**拼写容错匹配**。
-3. **可编辑的知识库（Few-Shot RAG）与模块化领域技能（`SKILL.md`）**
-   - 沉淀 30 组覆盖 7 类核心模式、经实库跑通验证的 NL–Cypher 黄金样本，按语义相似度 + 意图加权动态召回参考模板。
-   - 将图谱中的非显式拓扑约束（如 `类/方法` 通过 `moduleId`/`serviceContexts` 关联微服务、MQ 多队列共用默认交换机必须约束 `r1.路由键 = r2.路由键`、多跳限深防环）封装为可版本化、可在线编辑热加载的 `SKILL.md` 单元，由大模型按需语义选用。
-4. **三层安全护栏 + 最多 5 轮执行反馈自修正闭环**
-   - 执行前完成 ① 非空/只读/写操作与危险 APOC 拦截 → ② 实时 Schema 标签/关系/属性预检 → ③ Neo4j 原生 `EXPLAIN` 语法与执行计划校验。
-   - 校验拦截、运行报错或主查询异常 0 结果时，将诊断信息回传大模型反思重写（最多重试 5 轮）；复杂多子查询分别执行后按节点 `elementId` 去重归并子图，区分标注同步 RPC 与异步 MQ。
+### Docker Compose
 
----
+在仓库根目录执行，打开 `http://127.0.0.1:8000`。
 
-## 二、执行流程
-
-系统执行分为 **5 个核心阶段**，后端通过 SSE 实时推送当前执行阶段与精确耗时（单位：`s`）：
-
-![智能体执行流程](docs/agent_workflow.png)
-
-1. **阶段 1 · 大模型语义评估与规划**：基于紧凑图谱骨架与 Skill 目录，一次 LLM 调用完成意图/难度评估、Schema 展开标志判定、实体抽取与纠错、Skill 选择及复杂查询拆解。
-2. **阶段 2 · Schema 装配与实库对齐**：按语义标志装配 Enhanced Schema，通过 Neo4j 探针与编辑相似度容错核实实体真值，并从知识库召回 Top-K 相似已验证示例。
-3. **阶段 3 · Cypher 生成 · 校验 · 执行自修正闭环**：注入 Schema、对齐实体、Skills 与示例生成 Cypher → 三层护栏校验 → Neo4j 只读受控执行；失败或异常空结果自动反思重试（最多 5 轮）。
-4. **阶段 4 · 多子图归并去重**：复杂拆解模式下合并各子查询的节点、边与结果行，消除重复路径并标注同步 RPC / 异步 MQ。
-5. **阶段 5 · 自然语言总结与持久化**：基于实库返回样本生成忠于事实的中文结论，完整 Trace 落盘 SQLite，支持历史回放与一键导出 Markdown 报告。
-
----
-
-## 三、界面预览
-
-### 1. 智能查询工作台与 RPC + MQ 混合拓扑图
-支持实时阶段进度展示（单位：`s`）、自然语言总结、Cytoscape.js 交互拓扑图（按节点类型着色，橙色实线表示 RPC、紫色虚线表示 MQ，支持切换布局与点击查属性）及一键导出 Markdown 报告。
-
-![工作台与混合拓扑图](docs/ui_topology.png)
-
-### 2. 全过程执行追溯（Trace）
-完整记录实体对齐结果、加载的领域技能、三层护栏校验项、知识库召回示例及各阶段精确秒级耗时时间线。
-
-![全过程执行追溯](docs/ui_trace.png)
-
-### 3. NL–Cypher 查询知识库管理
-内置 30 组覆盖 7 类核心查询模式的实库验证示例，支持分类筛选、关键词检索、新增/编辑/删除、Neo4j 实库一键试跑校验与复用查询。
-
-![NL-Cypher 知识库管理](docs/ui_kb.png)
-
-### 4. Skills 领域技能查看与在线编辑
-支持直接查看每个 `SKILL.md` 的完整 Markdown 规则正文、在线编辑保存并立即热加载至查询引擎，或新建自定义领域技能。
-
-![Skills 技能管理](docs/ui_skills.png)
-
----
-
-## 四、快速启动
-
-### 1. 配置环境变量
-系统严格限定仅使用 **DeepSeek / GLM / Kimi**。复制 `.env.example` 为 `.env` 并填入任意一家 API Key（或直接通过系统环境变量配置，也可在界面右上角「系统配置」中调整）：
-
-```bash
-cp .env.example .env
+```sh
+docker compose up --build
 ```
 
-### 2. 构建前端并启动服务（单进程推荐）
-构建前端静态资源至 `frontend/dist` 后，启动 FastAPI 即可访问完整图形化界面：
+### Windows 本机
 
-```bash
-cd frontend && npm install && npm run build && cd ..
-uv sync
-uv run uvicorn backend.main:app --host 0.0.0.0 --port 8000
+环境要求为 Python 3.12 和 Node.js 22.12 或更新的 LTS 版本。在仓库根目录执行。
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
+npm.cmd --prefix frontend ci
+npm.cmd --prefix frontend run build
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
 ```
 
-浏览器打开：`http://127.0.0.1:8000`
+开发前端时，另开一个终端执行 `npm.cmd --prefix frontend run dev`，访问 `http://localhost:5173`。开发服务器会将 `/api` 代理到本机 8000 端口。Linux 或 macOS 使用 `.venv/bin/python` 和 `npm`。
 
-### 3. 前端开发模式（可选）
-```bash
-cd frontend
-npm install
-npm run dev
+默认使用内置合成图谱和规则解析，启动时无需 Neo4j 账号或模型 Key。界面顶部显示正在使用的图谱和解析方式。后端 OpenAPI 文档位于 `/docs`。
+
+## 演示流程
+
+1. 选择简单查询，运行「列出所有微服务」。
+2. 选择中等查询，运行「getAllFood 方法调用了哪些下游服务？」。从候选中选择 `ts-food-service` 的方法，检查同步调用的路径。
+3. 选择复杂查询，运行「ts-food-service 有哪些跨服务依赖？」。同步 RPC 与异步 MQ 分别执行，按微服务 ID 合并，路径中保留发布、路由与消费阶段。
+4. 切换「Cypher 与追踪」查看查询、绑定参数、阶段耗时和版本，使用「导出 Markdown」保存证据。
+5. 批量入口支持 UTF-8 文本和 JSON 数组。文本每行一个问题，JSON 元素可以为字符串或请求对象。例如：
+
+```json
+[
+  "列出所有微服务",
+  {"question":"ts-food-service 有哪些跨服务依赖？","level":"complex"}
+]
 ```
 
-### 4. 验证脚本
-```bash
-# 验证 30 组 NL-Cypher 知识库条目在目标 Neo4j 中 100% 语法正确且结果非空
-uv run python scripts/verify_kb.py
+每批最多 50 题，批量任务共享 2 个执行槽位。单题失败会显示在对应行，已完成结果可单独查看，待确认实体可打开该题继续处理。知识库支持新增、修改、删除、类别和难度筛选、启用状态及版本历史。
 
-# 运行端到端 API、安全护栏、复杂查询与 Markdown 报告导出测试
-uv run python scripts/test_e2e.py
+## 工作原理
+
+```mermaid
+flowchart LR
+    A["自然语言提问"] --> B["读取 Schema 快照"]
+    B --> C["检索示例并构建 Prompt"]
+    C --> D["生成查询计划"]
+    D --> E["实体消歧与 Cypher 编译"]
+    E --> F["EXPLAIN 与有界执行"]
+    F --> G["结果、拓扑与追踪"]
+    E --> H["请求用户选择同名实体"]
 ```
+
+FastAPI 通过 Pydantic 校验查询意图。模型输出结构化计划，服务端用查询模式白名单编译 Cypher。节点标签、关系和属性均经过当前 Schema 核对，实体名和属性值通过参数绑定。Neo4j 模式使用预检、只读事务路由和独立只读凭据。图谱读取的两项元数据过程由后端固定调用。查询端口默认绑定本机，适用于课程演示和联调。
+
+知识库以自然语言和结构化计划保存映射，按需生成当前 Schema 对应的 Cypher。TF-IDF 召回考虑中文词片、英文符号与同义表达，可打开模型语义重排，最终向生成阶段提供最多 3 个例子。总结由返回证据生成。复杂查询按通信机制拆分，方向由查询计划决定，调用段默认 6 跳，整条路径最多 10 跳。数据库查询事务预算为 5 秒，整题预算为 30 秒，模型计划修复最多 2 次。
+
+默认每个子查询最多收录 1,000 行，超过时标记执行结果不完整。界面拓扑最多展示 100 个节点和 500 条边，Markdown 报告保留执行范围内的全部证据。SQLite 保存查询、批次、示例与版本。应用以单进程启动，批次任务在进程重启后标记为中断。
+
+## 接入课程图谱
+
+1. 复制 `.env.example` 为 `.env`。设置 `GRAPH_MODE=neo4j`、`NEO4J_URI`、`NEO4J_DATABASE`、`NEO4J_USER` 和 `NEO4J_PASSWORD`。请课程管理员配置独立只读账号，允许读取必要的 Schema 元数据。
+2. 对照 `GET /api/schema` 核对节点标签、属性和关系。以 `backend/data/schema.demo.json` 为模板填写课程图谱的字段映射，并通过 `GRAPH_SCHEMA` 指向该文件。若实际归属及调用边方向、端点表示或 MQ 阶段与样例契约不同，需修改 `backend/app/compiler.py` 的相应路径模式并验证。详见 [图谱契约](docs/graph-contract.md)。
+3. 设置 `LLM_PROVIDER` 为 `deepseek`、`glm` 或 `kimi`，填写对应的 `LLM_API_KEY` 和团队批准的 `LLM_MODEL`。配置 `LLM_SEMANTIC_RERANK=1` 可启用同一批准模型的语义重排。
+4. Neo4j 模式默认从空知识库启动。可以在页面维护实库例子，也可以设置 `KB_SEED` 用准备好的 JSON 初始化一个新的 SQLite 文件。环境文件、数据库密码、模型 Key 与真实查询轨迹留在本地。
+
+Compose 中的映射及样例文件路径使用容器路径。默认挂载宿主项目的 `backend/data` 到 `/app/backend/data`。用本机 Neo4j 时，可直接使用本机运行方式。
+
+## 测试与评测
+
+在已激活 Python 虚拟环境的终端，从 `backend` 目录运行以下命令。
+
+```sh
+python -m pytest -q
+python -m evaluation.run --output ../artifacts/gold-demo-results.json
+python -m evaluation.run --kb --output ../artifacts/kb-demo-results.json
+python -m evaluation.run --no-examples --output ../artifacts/no-examples-demo-results.json
+```
+
+仓库包含 30 条样例知识库和独立的样例黄金 30 题，难度分布为简单 10、中等 12、复杂 8。评测保存每题的实际实体 ID 集合、机制、路径、Cypher、参数、总结、版本和耗时，另外汇总通过数与 P95。样例结果只用于验证项目实现。课程评分须以课程实库快照、批准模型、团队独立标注的黄金集和人工复核记录为准。完整交付核验步骤见 [验收与复现](docs/acceptance.md)。
+
+## 目录
+
+| 目录 | 内容 |
+| --- | --- |
+| `backend/app/` | FastAPI、图谱适配、检索、规划、编译、执行、报告 |
+| `backend/data/` | 样例图谱、字段映射、KB30 |
+| `backend/evaluation/` | 独立样例黄金集和评测工具 |
+| `backend/skills/` | 版本化 Text2Cypher Prompt |
+| `backend/tests/` | 查询管线、澄清、知识库和批量任务的回归测试 |
+| `frontend/` | Vue 3、TypeScript 和 Cytoscape.js 界面 |
+| `docs/` | 图谱契约、验收与复现 |
+| `.github/workflows/text2cypher-course.yml` | 课程实现的 GitHub Actions 检查 |

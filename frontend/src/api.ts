@@ -1,210 +1,63 @@
-import type {
-  AllowedProvider,
-  BatchQueryResponse,
-  DifficultyTier,
-  HealthStatus,
-  HistorySummary,
-  KBItem,
-  KBVerifyResponse,
-  ProviderInfo,
-  QueryResponse,
-  ReasoningEffort,
-  SchemaData,
-  SkillInfo,
-} from './types'
+export type Level = 'simple' | 'medium' | 'complex'
+export const levels: Record<Level, string> = { simple: '简单', medium: '中等', complex: '复杂' }
 
-async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
-    ...init,
-  })
-  if (!res.ok) {
-    const text = await res.text()
-    throw new Error(text || `HTTP ${res.status}`)
-  }
-  return res.json() as Promise<T>
+export interface Scope { service: string; repository: string; branch: string }
+export interface QueryInput {
+  question: string; level: Level; scope?: Scope;
+  candidate_id?: string; target_id?: string; clarify_from?: string;
 }
 
-export const api = {
-  getHealth: () => request<HealthStatus>('/api/health'),
-  getProviders: () =>
-    request<{
-      default_provider: AllowedProvider
-      default_max_retries: number
-      providers: ProviderInfo[]
-    }>('/api/providers'),
-  getSchema: () => request<SchemaData>('/api/schema'),
-  refreshSchema: () => request<SchemaData>('/api/schema/refresh', { method: 'POST' }),
-  getSkills: () => request<{ skills: SkillInfo[] }>('/api/skills'),
-  createSkill: (payload: {
-    name: string
-    version: string
-    description: string
-    triggers: string[]
-    body: string
-  }) =>
-    request<SkillInfo>('/api/skills', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
-  updateSkill: (
-    name: string,
-    payload: {
-      version?: string
-      description?: string
-      triggers?: string[]
-      body?: string
-      raw_content?: string
-    },
-  ) =>
-    request<SkillInfo>(`/api/skills/${encodeURIComponent(name)}`, {
-      method: 'PUT',
-      body: JSON.stringify(payload),
-    }),
-  deleteSkill: (name: string) =>
-    request<{ deleted: boolean; name: string }>(`/api/skills/${encodeURIComponent(name)}`, {
-      method: 'DELETE',
-    }),
+export interface GraphNode {
+  id: string; label: string; name: string; kind: string;
+  repository: string; branch: string; path: string;
+  classes?: string[]; services?: string[];
+}
+export interface GraphEdge { id: string; label: string; source: string; target: string; phase: string }
+export interface Graph {
+  nodes: GraphNode[]; edges: GraphEdge[]; total_nodes: number; total_edges: number; truncated: boolean;
+}
+export interface Row { id?: string; name?: string; mechanisms?: string[]; count?: number }
+export interface PathEvidence { mechanism: string; node_ids: string[]; edge_ids: string[] }
+export interface Result {
+  id: string; question: string; status: string; error?: string; summary?: string; elapsed_ms: number;
+  input: QueryInput; mode: string; complete?: boolean; graph?: Graph; records?: Row[]; paths?: PathEvidence[];
+  evidence?: GraphNode[]; evidence_edges?: GraphEdge[];
+  versions: Record<string, string>; trace: ({ stage: string; ms: number } & Record<string, unknown>)[];
+  queries: { mechanism: string; cypher: string; parameters: Record<string, unknown>; status?: string }[];
+  clarification?: { slot: 'source' | 'target'; name: string; candidates: GraphNode[]; truncated: boolean };
+}
+export interface Batch {
+  id: string; status: string;
+  items: { number: number; question: string; status: string; query_id?: string; error?: string }[];
+}
+export interface Plan {
+  operation: string; entity: string; name: string; service: string;
+  target_service: string; contains: string; depth: number; direction: 'forward' | 'reverse' | 'both';
+}
+export interface Example {
+  id: string; question: string; level: Level; review: 'draft' | 'approved';
+  category: string; version: number; plan: Plan; updated_at: string; deleted?: boolean;
+}
 
-  runQuery: (payload: {
-    question: string
-    difficulty: DifficultyTier
-    provider: AllowedProvider
-    model?: string
-    api_key?: string
-    reasoning_effort?: ReasoningEffort
-    max_retries?: number
-  }) =>
-    request<QueryResponse>('/api/query', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+export const statuses: Record<string, string> = {
+  ok: '完成', error: '失败', rejected: '已拒绝', timeout: '超时', clarify: '待确认',
+  running: '执行中', queued: '排队中', cancelled: '已取消', interrupted: '已中断', done: '已完成',
+}
 
-  runQueryStream: async (
-    payload: {
-      question: string
-      difficulty: DifficultyTier
-      provider: AllowedProvider
-      model?: string
-      api_key?: string
-      reasoning_effort?: ReasoningEffort
-      max_retries?: number
-    },
-    onEvent: (evt: Record<string, unknown>) => void,
-  ): Promise<QueryResponse> => {
-    const res = await fetch('/api/query/stream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-    if (!res.ok || !res.body) {
-      const text = await res.text()
-      throw new Error(text || `HTTP ${res.status}`)
-    }
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder('utf-8')
-    let buffer = ''
-    let finalResult: QueryResponse | null = null
-
-    while (true) {
-      const { value, done } = await reader.read()
-      if (done) break
-      buffer += decoder.decode(value, { stream: true })
-      const chunks = buffer.split('\n\n')
-      buffer = chunks.pop() || ''
-
-      for (const chunk of chunks) {
-        const dataLines = chunk
-          .split('\n')
-          .filter((l) => l.startsWith('data:'))
-          .map((l) => l.slice(5).trim())
-        if (dataLines.length === 0) continue
-        try {
-          const parsed = JSON.parse(dataLines.join('\n')) as Record<string, unknown>
-          if (parsed.event === 'result' && parsed.data) {
-            finalResult = parsed.data as QueryResponse
-          } else if (parsed.event === 'error') {
-            throw new Error(String(parsed.message || '流式查询异常'))
-          } else {
-            onEvent(parsed)
-          }
-        } catch (err) {
-          if (err instanceof Error && err.message !== 'Unexpected end of JSON input') {
-            throw err
-          }
-        }
-      }
-    }
-
-    if (!finalResult) {
-      throw new Error('未收到最终查询结果')
-    }
-    return finalResult
-  },
-
-  runBatchQuery: (payload: {
-    questions: string[]
-    difficulty: DifficultyTier
-    provider: AllowedProvider
-    model?: string
-    api_key?: string
-  }) =>
-    request<BatchQueryResponse>('/api/query/batch', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
-
-  getHistory: (limit = 40) => request<{ items: HistorySummary[] }>(`/api/history?limit=${limit}`),
-  getHistoryDetail: (queryId: string) => request<QueryResponse>(`/api/history/${queryId}`),
-  getMarkdownUrl: (queryId: string) => `/api/history/${queryId}/markdown`,
-
-  listKB: (params?: { keyword?: string; category?: string; complexity?: string }) => {
-    const sp = new URLSearchParams()
-    if (params?.keyword) sp.set('keyword', params.keyword)
-    if (params?.category && params.category !== '全部') sp.set('category', params.category)
-    if (params?.complexity && params.complexity !== '全部') sp.set('complexity', params.complexity)
-    return request<{
-      total: number
-      categories: { category: string; count: number }[]
-      items: KBItem[]
-    }>(`/api/kb?${sp.toString()}`)
-  },
-
-  createKB: (payload: {
-    question: string
-    cypher: string
-    category: string
-    complexity: '简单' | '中等' | '复杂'
-    tags: string[]
-    description: string
-  }) =>
-    request<KBItem>('/api/kb', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
-
-  updateKB: (
-    id: string,
-    payload: Partial<{
-      question: string
-      cypher: string
-      category: string
-      complexity: '简单' | '中等' | '复杂'
-      tags: string[]
-      description: string
-    }>,
-  ) =>
-    request<KBItem>(`/api/kb/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(payload),
-    }),
-
-  deleteKB: (id: string) =>
-    request<{ deleted: boolean; id: string }>(`/api/kb/${id}`, { method: 'DELETE' }),
-
-  verifyKBCypher: (cypher: string) =>
-    request<KBVerifyResponse>('/api/kb/verify', {
-      method: 'POST',
-      body: JSON.stringify({ cypher }),
-    }),
+export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
+  const response = await fetch('/api' + path, {
+    method,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null)
+    const detail = payload?.detail
+    if (typeof detail === 'string') throw new Error(detail)
+    if (Array.isArray(detail))
+      throw new Error(detail.map(item => item.loc.slice(1).join('.') + ' ' + item.msg).join('，'))
+    throw new Error('请求失败，请检查后端连接')
+  }
+  if (response.status === 204) return undefined as T
+  return response.json() as Promise<T>
 }
