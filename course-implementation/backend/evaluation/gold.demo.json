@@ -1,0 +1,324 @@
+[
+  {
+    "id": "S1",
+    "question": "查询所有微服务的名称",
+    "level": "simple",
+    "expected": [
+      "food",
+      "train",
+      "delivery",
+      "order",
+      "station",
+      "payment"
+    ]
+  },
+  {
+    "id": "S2",
+    "question": "数据库里一共有几个微服务？",
+    "level": "simple",
+    "expected": 6
+  },
+  {
+    "id": "S3",
+    "question": "列出名称包含 Controller 的类",
+    "level": "simple",
+    "expected": [
+      "fc",
+      "oc"
+    ]
+  },
+  {
+    "id": "S4",
+    "question": "列出所有消息队列",
+    "level": "simple",
+    "expected": [
+      "dq",
+      "pq"
+    ]
+  },
+  {
+    "id": "S5",
+    "question": "统计测试用例的数量",
+    "level": "simple",
+    "expected": 2
+  },
+  {
+    "id": "S6",
+    "question": "列出配置文件节点",
+    "level": "simple",
+    "expected": [
+      "foodcfg",
+      "ordercfg"
+    ]
+  },
+  {
+    "id": "S7",
+    "question": "loadFoodCatalog 的所属类是什么？",
+    "level": "simple",
+    "expected": [
+      "fs"
+    ]
+  },
+  {
+    "id": "S8",
+    "question": "FoodServiceTest 测试用例的归属类是什么？",
+    "level": "simple",
+    "expected": [
+      "fs"
+    ]
+  },
+  {
+    "id": "S9",
+    "question": "查询消息通信交换机有哪些",
+    "level": "simple",
+    "expected": [
+      "fx",
+      "px"
+    ]
+  },
+  {
+    "id": "S10",
+    "question": "显示所有 API 端点",
+    "level": "simple",
+    "expected": [
+      "foodapi",
+      "orderapi",
+      "trainapi",
+      "paymentapi",
+      "ordfoodapi",
+      "stationapi"
+    ]
+  },
+  {
+    "id": "M1",
+    "question": "fetchTrainFoods 方法的下游服务有哪些？",
+    "level": "medium",
+    "expected": [
+      "train",
+      "station"
+    ]
+  },
+  {
+    "id": "M2",
+    "question": "ts-order-service 上的 getAllFood 会调用哪些下游服务？",
+    "level": "medium",
+    "expected": [
+      "food",
+      "train",
+      "station"
+    ]
+  },
+  {
+    "id": "M3",
+    "question": "谁调用了 ts-food-service？",
+    "level": "medium",
+    "expected": [
+      "order"
+    ]
+  },
+  {
+    "id": "M4",
+    "question": "谁调用了 ts-station-service？",
+    "level": "medium",
+    "expected": [
+      "order",
+      "food",
+      "train"
+    ]
+  },
+  {
+    "id": "M5",
+    "question": "ts-order-service 暴露哪些入口接口？",
+    "level": "medium",
+    "expected": [
+      "orderapi",
+      "ordfoodapi"
+    ]
+  },
+  {
+    "id": "M6",
+    "question": "FoodController 类有哪些入口接口？",
+    "level": "medium",
+    "expected": [
+      "foodapi"
+    ]
+  },
+  {
+    "id": "M7",
+    "question": "findStation 有哪些上游入口 API？",
+    "level": "medium",
+    "expected": [
+      "foodapi",
+      "ordfoodapi",
+      "stationapi",
+      "trainapi"
+    ]
+  },
+  {
+    "id": "M8",
+    "question": "publishFoodDelivery 被修改会影响哪些接口？",
+    "level": "medium",
+    "expected": [
+      "foodapi",
+      "orderapi",
+      "ordfoodapi"
+    ]
+  },
+  {
+    "id": "M9",
+    "question": "food.delivery 消息队列的生产者是哪一个？",
+    "level": "medium",
+    "expected": [
+      "publishfood"
+    ]
+  },
+  {
+    "id": "M10",
+    "question": "payment.receipts 这条消息队列由谁发送？",
+    "level": "medium",
+    "expected": [
+      "publishpay"
+    ]
+  },
+  {
+    "id": "M11",
+    "question": "OrderController 导入哪些类？",
+    "level": "medium",
+    "expected": [
+      "os"
+    ]
+  },
+  {
+    "id": "M12",
+    "question": "FoodService 实现的接口类是什么？",
+    "level": "medium",
+    "expected": [
+      "af"
+    ]
+  },
+  {
+    "id": "H1",
+    "question": "梳理 ts-food-service 的同步调用与异步跨服务依赖",
+    "level": "complex",
+    "expected": [
+      "train",
+      "station",
+      "delivery"
+    ],
+    "mechanisms": {
+      "train": [
+        "RPC"
+      ],
+      "station": [
+        "RPC"
+      ],
+      "delivery": [
+        "MQ"
+      ]
+    },
+    "required_paths": [
+      {"mechanism": "RPC", "node_ids": ["food", "tc", "remote", "trainfind", "tf", "train"]},
+      {"mechanism": "MQ", "node_ids": ["food", "fs", "publishfood", "fx", "dq", "consumefood", "dt", "delivery"]}
+    ]
+  },
+  {
+    "id": "H2",
+    "question": "ts-payment-service 的 RPC + MQ 跨服务依赖有哪些？",
+    "level": "complex",
+    "expected": [
+      "order"
+    ],
+    "mechanisms": {
+      "order": [
+        "MQ"
+      ]
+    }
+  },
+  {
+    "id": "H3",
+    "question": "分析 ts-train-food-service 指向 ts-station-service 的综合依赖",
+    "level": "complex",
+    "expected": [
+      "station"
+    ],
+    "mechanisms": {
+      "station": [
+        "RPC"
+      ]
+    }
+  },
+  {
+    "id": "H4",
+    "question": "ts-food-service 往 ts-delivery-service 发送了什么 MQ 通信？",
+    "level": "complex",
+    "expected": [
+      "delivery"
+    ],
+    "mechanisms": {
+      "delivery": [
+        "MQ"
+      ]
+    }
+  },
+  {
+    "id": "H5",
+    "question": "给我 food.delivery 队列的发布和消费路径",
+    "level": "complex",
+    "expected": [
+      "publishfood",
+      "consumefood"
+    ],
+    "mechanisms": {
+      "publishfood": [
+        "MQ 发布"
+      ],
+      "consumefood": [
+        "MQ 消费"
+      ]
+    },
+    "required_paths": [
+      {"mechanism": "MQ 发布", "node_ids": ["dq", "fx", "publishfood"]},
+      {"mechanism": "MQ 消费", "node_ids": ["dq", "consumefood"]}
+    ]
+  },
+  {
+    "id": "H6",
+    "question": "还原 payment.events 交换机的消息链路",
+    "level": "complex",
+    "expected": [
+      "publishpay",
+      "consumeorder"
+    ],
+    "mechanisms": {
+      "publishpay": [
+        "MQ 发布"
+      ],
+      "consumeorder": [
+        "MQ 消费"
+      ]
+    }
+  },
+  {
+    "id": "H7",
+    "question": "假设修改 queryTrainFood，哪些上游接口受到影响？",
+    "level": "complex",
+    "expected": [
+      "foodapi",
+      "orderapi",
+      "ordfoodapi",
+      "trainapi"
+    ]
+  },
+  {
+    "id": "H8",
+    "question": "ts-food-service 的 getAllFood 有哪些调用链和方法证据？",
+    "level": "complex",
+    "expected": [
+      "load",
+      "remote",
+      "trainfind",
+      "publishfood",
+      "location"
+    ]
+  }
+]

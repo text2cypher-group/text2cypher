@@ -1,0 +1,333 @@
+[
+  {
+    "id": "KB01",
+    "question": "列出所有微服务",
+    "level": "simple",
+    "plan": {
+      "operation": "list",
+      "entity": "service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB02",
+    "question": "查找所有方法节点",
+    "level": "simple",
+    "plan": {
+      "operation": "list",
+      "entity": "method"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB03",
+    "question": "getAllFood 方法属于哪个类？请限定 ts-food-service",
+    "level": "simple",
+    "plan": {
+      "operation": "owner",
+      "entity": "method",
+      "name": "getAllFood",
+      "service": "ts-food-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB04",
+    "question": "application-food.yml 配置文件属于哪个服务？",
+    "level": "simple",
+    "plan": {
+      "operation": "owner",
+      "entity": "config",
+      "name": "application-food.yml"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB05",
+    "question": "查找 Controller 类型的类",
+    "level": "simple",
+    "plan": {
+      "operation": "list",
+      "entity": "class",
+      "contains": "Controller"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB06",
+    "question": "统计微服务总数量",
+    "level": "simple",
+    "plan": {
+      "operation": "count",
+      "entity": "service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB07",
+    "question": "FoodController 导入了哪个类？",
+    "level": "simple",
+    "plan": {
+      "operation": "imports",
+      "entity": "class",
+      "name": "FoodController"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB08",
+    "question": "FoodService 继承了哪个类？",
+    "level": "simple",
+    "plan": {
+      "operation": "inherits",
+      "entity": "class",
+      "name": "FoodService"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB09",
+    "question": "ts-food-service 暴露了哪些入口 API？",
+    "level": "medium",
+    "plan": {
+      "operation": "entry",
+      "entity": "service",
+      "name": "ts-food-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB10",
+    "question": "OrderController 的入口 API 有哪些？",
+    "level": "medium",
+    "plan": {
+      "operation": "entry",
+      "entity": "class",
+      "name": "OrderController"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB11",
+    "question": "chargeOrder 对应哪些入口 API？",
+    "level": "medium",
+    "plan": {
+      "operation": "entry",
+      "entity": "method",
+      "name": "chargeOrder"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB12",
+    "question": "ts-station-service 暴露的接口入口有哪些？",
+    "level": "medium",
+    "plan": {
+      "operation": "entry",
+      "entity": "service",
+      "name": "ts-station-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB13",
+    "question": "ts-food-service 的 getAllFood 调用了哪些下游服务？",
+    "level": "medium",
+    "plan": {
+      "operation": "downstream",
+      "entity": "method",
+      "name": "getAllFood",
+      "service": "ts-food-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB14",
+    "question": "fetchTrainFoods 调用了哪些下游服务？",
+    "level": "medium",
+    "plan": {
+      "operation": "downstream",
+      "entity": "method",
+      "name": "fetchTrainFoods"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB15",
+    "question": "createOrder 方法的调用链是什么？",
+    "level": "medium",
+    "plan": {
+      "operation": "call_chain",
+      "entity": "method",
+      "name": "createOrder"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB16",
+    "question": "queryTrainFood 的下游服务有哪些？",
+    "level": "medium",
+    "plan": {
+      "operation": "downstream",
+      "entity": "method",
+      "name": "queryTrainFood"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB17",
+    "question": "loadFoodCatalog 的调用链有哪些？",
+    "level": "medium",
+    "plan": {
+      "operation": "call_chain",
+      "entity": "method",
+      "name": "loadFoodCatalog"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB18",
+    "question": "哪些服务调用了 ts-train-food-service？",
+    "level": "medium",
+    "plan": {
+      "operation": "callers",
+      "entity": "service",
+      "name": "ts-train-food-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB19",
+    "question": "哪些服务调用了 ts-payment-service？",
+    "level": "medium",
+    "plan": {
+      "operation": "callers",
+      "entity": "service",
+      "name": "ts-payment-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB20",
+    "question": "修改 publishFoodDelivery 会影响哪些上游 API？",
+    "level": "complex",
+    "plan": {
+      "operation": "impact",
+      "entity": "method",
+      "name": "publishFoodDelivery"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB21",
+    "question": "删除 findStation 会影响哪些上游 API？",
+    "level": "complex",
+    "plan": {
+      "operation": "impact",
+      "entity": "method",
+      "name": "findStation"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB22",
+    "question": "food.delivery 队列由谁发布消息？",
+    "level": "medium",
+    "plan": {
+      "operation": "publishers",
+      "entity": "queue",
+      "name": "food.delivery"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB23",
+    "question": "payment.receipts 队列的消息从哪来、到哪去？",
+    "level": "complex",
+    "plan": {
+      "operation": "mq",
+      "entity": "queue",
+      "name": "payment.receipts"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB24",
+    "question": "food.events 交换机的完整 MQ 链路是什么？",
+    "level": "complex",
+    "plan": {
+      "operation": "mq",
+      "entity": "exchange",
+      "name": "food.events"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB25",
+    "question": "ts-food-service 与 ts-delivery-service 之间有哪些 MQ 通信？",
+    "level": "complex",
+    "plan": {
+      "operation": "mq",
+      "entity": "service",
+      "name": "ts-food-service",
+      "target_service": "ts-delivery-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB26",
+    "question": "publishPaymentReceipt 发布的消息链路有哪些？",
+    "level": "complex",
+    "plan": {
+      "operation": "mq",
+      "entity": "method",
+      "name": "publishPaymentReceipt"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB27",
+    "question": "ts-food-service 有哪些跨服务依赖？",
+    "level": "complex",
+    "plan": {
+      "operation": "dependencies",
+      "entity": "service",
+      "name": "ts-food-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB28",
+    "question": "ts-payment-service 与 ts-order-service 的同步和异步综合依赖有哪些？",
+    "level": "complex",
+    "plan": {
+      "operation": "dependencies",
+      "entity": "service",
+      "name": "ts-payment-service",
+      "target_service": "ts-order-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB29",
+    "question": "ts-order-service 的 RPC 服务依赖是什么？",
+    "level": "complex",
+    "plan": {
+      "operation": "rpc",
+      "entity": "service",
+      "name": "ts-order-service"
+    },
+    "review": "approved"
+  },
+  {
+    "id": "KB30",
+    "question": "ts-train-food-service 有哪些同步调用与 MQ 综合依赖？",
+    "level": "complex",
+    "plan": {
+      "operation": "dependencies",
+      "entity": "service",
+      "name": "ts-train-food-service"
+    },
+    "review": "approved"
+  }
+]

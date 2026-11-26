@@ -1,0 +1,718 @@
+{
+  "nodes": [
+    {
+      "id": "food",
+      "kind": "service",
+      "name": "ts-food-service",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "pom.xml"
+    },
+    {
+      "id": "train",
+      "kind": "service",
+      "name": "ts-train-food-service",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "pom.xml"
+    },
+    {
+      "id": "delivery",
+      "kind": "service",
+      "name": "ts-delivery-service",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "pom.xml"
+    },
+    {
+      "id": "order",
+      "kind": "service",
+      "name": "ts-order-service",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "pom.xml"
+    },
+    {
+      "id": "station",
+      "kind": "service",
+      "name": "ts-station-service",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "pom.xml"
+    },
+    {
+      "id": "payment",
+      "kind": "service",
+      "name": "ts-payment-service",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "pom.xml"
+    },
+    {
+      "id": "fc",
+      "kind": "class",
+      "name": "FoodController",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/FoodController.java"
+    },
+    {
+      "id": "fs",
+      "kind": "class",
+      "name": "FoodService",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/FoodService.java"
+    },
+    {
+      "id": "tc",
+      "kind": "class",
+      "name": "TrainFoodClient",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/TrainFoodClient.java"
+    },
+    {
+      "id": "tf",
+      "kind": "class",
+      "name": "TrainFoodService",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/train/TrainFoodService.java"
+    },
+    {
+      "id": "dt",
+      "kind": "class",
+      "name": "DeliveryListener",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/delivery/DeliveryListener.java"
+    },
+    {
+      "id": "os",
+      "kind": "class",
+      "name": "OrderService",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/order/OrderService.java"
+    },
+    {
+      "id": "oc",
+      "kind": "class",
+      "name": "OrderController",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/order/OrderController.java"
+    },
+    {
+      "id": "ss",
+      "kind": "class",
+      "name": "StationService",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/station/StationService.java"
+    },
+    {
+      "id": "ps",
+      "kind": "class",
+      "name": "PaymentService",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/payment/PaymentService.java"
+    },
+    {
+      "id": "af",
+      "kind": "class",
+      "name": "FoodPort",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/FoodPort.java"
+    },
+    {
+      "id": "bf",
+      "kind": "class",
+      "name": "BaseFoodService",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/BaseFoodService.java"
+    },
+    {
+      "id": "get",
+      "kind": "method",
+      "name": "getAllFood",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/FoodController.java"
+    },
+    {
+      "id": "load",
+      "kind": "method",
+      "name": "loadFoodCatalog",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/FoodService.java"
+    },
+    {
+      "id": "remote",
+      "kind": "method",
+      "name": "fetchTrainFoods",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/TrainFoodClient.java"
+    },
+    {
+      "id": "trainfind",
+      "kind": "method",
+      "name": "queryTrainFood",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/train/TrainFoodService.java"
+    },
+    {
+      "id": "publishfood",
+      "kind": "method",
+      "name": "publishFoodDelivery",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/food/FoodService.java"
+    },
+    {
+      "id": "consumefood",
+      "kind": "method",
+      "name": "onFoodDelivery",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/delivery/DeliveryListener.java"
+    },
+    {
+      "id": "orderget",
+      "kind": "method",
+      "name": "getAllFood",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/order/OrderService.java"
+    },
+    {
+      "id": "ordercreate",
+      "kind": "method",
+      "name": "createOrder",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/order/OrderService.java"
+    },
+    {
+      "id": "location",
+      "kind": "method",
+      "name": "findStation",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/station/StationService.java"
+    },
+    {
+      "id": "charge",
+      "kind": "method",
+      "name": "chargeOrder",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/payment/PaymentService.java"
+    },
+    {
+      "id": "publishpay",
+      "kind": "method",
+      "name": "publishPaymentReceipt",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/payment/PaymentService.java"
+    },
+    {
+      "id": "consumeorder",
+      "kind": "method",
+      "name": "onPaymentReceipt",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/order/OrderService.java"
+    },
+    {
+      "id": "ready",
+      "kind": "method",
+      "name": "lookupPickupPoint",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "src/delivery/DeliveryListener.java"
+    },
+    {
+      "id": "foodapi",
+      "kind": "api",
+      "name": "/api/v1/food",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "food//api/v1/food"
+    },
+    {
+      "id": "orderapi",
+      "kind": "api",
+      "name": "/api/v1/orders",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "order//api/v1/orders"
+    },
+    {
+      "id": "trainapi",
+      "kind": "api",
+      "name": "/api/v1/train-food",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "train//api/v1/train-food"
+    },
+    {
+      "id": "paymentapi",
+      "kind": "api",
+      "name": "/api/v1/payments",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "payment//api/v1/payments"
+    },
+    {
+      "id": "ordfoodapi",
+      "kind": "api",
+      "name": "/api/v1/orders/food",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "order//api/v1/orders/food"
+    },
+    {
+      "id": "stationapi",
+      "kind": "api",
+      "name": "/api/v1/stations",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "station//api/v1/stations"
+    },
+    {
+      "id": "foodcfg",
+      "kind": "config",
+      "name": "application-food.yml",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "food/application-food.yml"
+    },
+    {
+      "id": "ordercfg",
+      "kind": "config",
+      "name": "application-order.yml",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "order/application-order.yml"
+    },
+    {
+      "id": "foodtest",
+      "kind": "test",
+      "name": "FoodServiceTest",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "food/FoodServiceTest"
+    },
+    {
+      "id": "traintest",
+      "kind": "test",
+      "name": "TrainFoodServiceTest",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "train/TrainFoodServiceTest"
+    },
+    {
+      "id": "fx",
+      "kind": "exchange",
+      "name": "food.events",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "infra/food.events"
+    },
+    {
+      "id": "px",
+      "kind": "exchange",
+      "name": "payment.events",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "infra/payment.events"
+    },
+    {
+      "id": "dq",
+      "kind": "queue",
+      "name": "food.delivery",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "infra/food.delivery"
+    },
+    {
+      "id": "pq",
+      "kind": "queue",
+      "name": "payment.receipts",
+      "repository": "train-ticket-demo",
+      "branch": "main",
+      "path": "infra/payment.receipts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "fc",
+      "target": "food",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "fs",
+      "target": "food",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "tc",
+      "target": "food",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "tf",
+      "target": "train",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "dt",
+      "target": "delivery",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "os",
+      "target": "order",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "oc",
+      "target": "order",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "ss",
+      "target": "station",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "ps",
+      "target": "payment",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "af",
+      "target": "food",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "bf",
+      "target": "food",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "get",
+      "target": "fc",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "load",
+      "target": "fs",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "remote",
+      "target": "tc",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "trainfind",
+      "target": "tf",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "publishfood",
+      "target": "fs",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "consumefood",
+      "target": "dt",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "orderget",
+      "target": "os",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "ordercreate",
+      "target": "os",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "location",
+      "target": "ss",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "charge",
+      "target": "ps",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "publishpay",
+      "target": "ps",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "consumeorder",
+      "target": "os",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "ready",
+      "target": "dt",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "foodapi",
+      "target": "fc",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "foodapi",
+      "target": "get",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "orderapi",
+      "target": "oc",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "orderapi",
+      "target": "ordercreate",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "trainapi",
+      "target": "tf",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "trainapi",
+      "target": "trainfind",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "paymentapi",
+      "target": "ps",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "paymentapi",
+      "target": "charge",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "ordfoodapi",
+      "target": "oc",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "ordfoodapi",
+      "target": "orderget",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "stationapi",
+      "target": "ss",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "stationapi",
+      "target": "location",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "get",
+      "target": "load",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "load",
+      "target": "remote",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "remote",
+      "target": "trainfind",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "load",
+      "target": "publishfood",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "ordercreate",
+      "target": "orderget",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "orderget",
+      "target": "get",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "ordercreate",
+      "target": "charge",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "trainfind",
+      "target": "location",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "charge",
+      "target": "publishpay",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "consumefood",
+      "target": "ready",
+      "relation": "calls",
+      "phase": ""
+    },
+    {
+      "source": "foodcfg",
+      "target": "food",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "ordercfg",
+      "target": "order",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "foodtest",
+      "target": "fs",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "traintest",
+      "target": "tf",
+      "relation": "owns",
+      "phase": ""
+    },
+    {
+      "source": "fc",
+      "target": "fs",
+      "relation": "imports",
+      "phase": ""
+    },
+    {
+      "source": "oc",
+      "target": "os",
+      "relation": "imports",
+      "phase": ""
+    },
+    {
+      "source": "fs",
+      "target": "af",
+      "relation": "implements",
+      "phase": ""
+    },
+    {
+      "source": "fs",
+      "target": "bf",
+      "relation": "inherits",
+      "phase": ""
+    },
+    {
+      "source": "publishfood",
+      "target": "fx",
+      "relation": "message",
+      "phase": "publish"
+    },
+    {
+      "source": "fx",
+      "target": "dq",
+      "relation": "message",
+      "phase": "route"
+    },
+    {
+      "source": "dq",
+      "target": "consumefood",
+      "relation": "message",
+      "phase": "consume"
+    },
+    {
+      "source": "publishpay",
+      "target": "px",
+      "relation": "message",
+      "phase": "publish"
+    },
+    {
+      "source": "px",
+      "target": "pq",
+      "relation": "message",
+      "phase": "route"
+    },
+    {
+      "source": "pq",
+      "target": "consumeorder",
+      "relation": "message",
+      "phase": "consume"
+    }
+  ]
+}

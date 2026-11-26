@@ -1,0 +1,15 @@
+{
+  "entities": {
+    "service": {"label": "微服务", "name": "服务名称"},
+    "class": {"label": "类", "name": "类名"},
+    "method": {"label": "方法", "name": "方法名"},
+    "api": {"label": "API 端点", "name": "接口路径"},
+    "exchange": {"label": "消息通信交换机", "name": "交换机名称"},
+    "queue": {"label": "消息队列", "name": "队列名称"},
+    "config": {"label": "配置文件节点", "name": "文件名"},
+    "test": {"label": "测试用例", "name": "用例名"}
+  },
+  "fields": {"id": "全局ID", "repository": "仓库", "branch": "分支", "path": "文件路径", "phase": "阶段"},
+  "relations": {"owns": "归属", "imports": "导入", "calls": "调用", "implements": "接口实现", "inherits": "继承", "message": "消息流"},
+  "mq_phases": {"publish": "发布", "route": "路由", "consume": "消费"}
+}
